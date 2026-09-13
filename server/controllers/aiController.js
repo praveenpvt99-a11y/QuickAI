@@ -5,7 +5,7 @@ import axios from "axios";
 import FormData from "form-data";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
-import { PDFParse } from "pdf-parse";
+\import pdf from "pdf-parse";
 
 const AI = new OpenAI({
     apiKey: process.env.GEMINI_API_KEY,
@@ -432,13 +432,8 @@ export const resumeReview = async (req, res) => {
         const dataBuffer = fs.readFileSync(resume.path);
 
         // Parse PDF
-        const parser = new PDFParse({
-    data: dataBuffer
-});
-
-const pdfData = await parser.getText();
-
-await parser.destroy();
+       const pdfData = await pdf(dataBuffer);
+const pdfText = pdfData.text;
 
         // Create AI prompt
         const prompt = `
@@ -458,7 +453,7 @@ Analyze:
 
 Resume Content:
 
-${pdfData.text}
+${pdfText}
 `;
 
         // Ask Gemini for review
