@@ -5,13 +5,12 @@ import axios from "axios";
 import FormData from "form-data";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
-\import pdf from "pdf-parse";
+import pdf from "pdf-parse/lib/pdf-parse.js";
 
 const AI = new OpenAI({
     apiKey: process.env.GEMINI_API_KEY,
     baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/"
 });
-
 
 // =========================
 // Generate Article
@@ -77,6 +76,7 @@ export const generateArticle = async (req, res) => {
         });
     }
 };
+
 
 // =========================
 // Generate Blog Title
@@ -394,6 +394,7 @@ export const removeImageObject = async (req, res) => {
     }
 };
 
+
 // =========================
 // Resume Review
 // =========================
@@ -432,8 +433,7 @@ export const resumeReview = async (req, res) => {
         const dataBuffer = fs.readFileSync(resume.path);
 
         // Parse PDF
-       const pdfData = await pdf(dataBuffer);
-const pdfText = pdfData.text;
+        const pdfData = await pdf(dataBuffer);
 
         // Create AI prompt
         const prompt = `
@@ -453,7 +453,7 @@ Analyze:
 
 Resume Content:
 
-${pdfText}
+${pdfData.text}
 `;
 
         // Ask Gemini for review
