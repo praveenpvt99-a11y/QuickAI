@@ -12,8 +12,8 @@ const navigate=useNavigate()
     bg-no-repeat min-h-screen'>
         <div className='text-center mb-6'>
             <h1 className='text-3xl sm:text-5xl md:text-6xl 2xl:text-7xl
-            font-semibold mx-auto leading-[1.2]'> Hi  <br/>
-            <span className='text-primary'> lanja dana </span> </h1>
+            font-semibold mx-auto leading-[1.2]'>Create Amazing Content <br/>
+            <span className='text-primary'> with AI tools </span> </h1>
             <p>Transform your content creation with our suite of premium
                 AI tools, Write Articles, Generate Images, and enhance your 
                 workflow.
