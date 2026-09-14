@@ -32,7 +32,7 @@ export const generateArticle = async (req, res) => {
         }
 
         const response = await AI.chat.completions.create({
-            model: "gemini-2.5-flash",
+            model: "gemini-3.6-flash",
 
             messages: [
                 {
@@ -456,7 +456,7 @@ ${pdfText}
 
         // Ask Gemini for review
         const response = await AI.chat.completions.create({
-            model: "gemini-2.5-flash",
+            model: "gemini-3.6-flash",
             messages: [
                 {
                     role: "user",
