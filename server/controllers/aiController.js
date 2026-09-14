@@ -99,7 +99,7 @@ export const generateBlogTitle = async (req, res) => {
         console.log("RECEIVED PROMPT:", prompt);
 
         const response = await AI.chat.completions.create({
-            model: "gemini-2.5-flash",
+            model: "gemini-3.6-flash",
             messages: [
                 {
                     role: "user",
