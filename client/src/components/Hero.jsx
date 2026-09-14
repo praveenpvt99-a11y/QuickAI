@@ -13,7 +13,7 @@ const navigate=useNavigate()
         <div className='text-center mb-6'>
             <h1 className='text-3xl sm:text-5xl md:text-6xl 2xl:text-7xl
             font-semibold mx-auto leading-[1.2]'> Hi  <br/>
-            <span className='text-primary'> Akshaya </span> </h1>
+            <span className='text-primary'> lanja dana </span> </h1>
             <p>Transform your content creation with our suite of premium
                 AI tools, Write Articles, Generate Images, and enhance your 
                 workflow.
