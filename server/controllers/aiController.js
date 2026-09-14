@@ -5,7 +5,7 @@ import axios from "axios";
 import FormData from "form-data";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
-import pdf from "pdf-parse/lib/pdf-parse.js";
+import PDFParser from "pdf2json";
 
 const AI = new OpenAI({
     apiKey: process.env.GEMINI_API_KEY,
@@ -32,7 +32,7 @@ export const generateArticle = async (req, res) => {
         }
 
         const response = await AI.chat.completions.create({
-            model: "gemini-3.6-flash",
+            model: "gemini-2.5-flash",
 
             messages: [
                 {
@@ -99,7 +99,7 @@ export const generateBlogTitle = async (req, res) => {
         console.log("RECEIVED PROMPT:", prompt);
 
         const response = await AI.chat.completions.create({
-            model: "gemini-3.6-flash",
+            model: "gemini-2.5-flash",
             messages: [
                 {
                     role: "user",
@@ -429,11 +429,15 @@ export const resumeReview = async (req, res) => {
             });
         }
 
-        // Read uploaded PDF
-        const dataBuffer = fs.readFileSync(resume.path);
-
-        // Parse PDF
-        const pdfData = await pdf(dataBuffer);
+        // Parse PDF using pdf2json Promise wrapper
+        const pdfText = await new Promise((resolve, reject) => {
+            const pdfParser = new PDFParser(null, 1);
+            pdfParser.on("pdfParser_dataError", (errData) => reject(errData.parserError));
+            pdfParser.on("pdfParser_dataReady", () => {
+                resolve(pdfParser.getRawTextContent());
+            });
+            pdfParser.loadPDF(resume.path);
+        });
 
         // Create AI prompt
         const prompt = `
@@ -453,12 +457,12 @@ Analyze:
 
 Resume Content:
 
-${pdfData.text}
+${pdfText}
 `;
 
         // Ask Gemini for review
         const response = await AI.chat.completions.create({
-            model: "gemini-3.6-flash",
+            model: "gemini-2.5-flash",
             messages: [
                 {
                     role: "user",
