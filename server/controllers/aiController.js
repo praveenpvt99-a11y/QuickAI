@@ -5,7 +5,7 @@ import axios from "axios";
 import FormData from "form-data";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
-import PDFParser from "pdf2json";
+import pdfParse from "pdf-parse-fork";
 
 const AI = new OpenAI({
     apiKey: process.env.GEMINI_API_KEY,
@@ -398,14 +398,15 @@ export const removeImageObject = async (req, res) => {
 // =========================
 // Resume Review
 // =========================
+// =========================
+// Resume Review
+// =========================
 export const resumeReview = async (req, res) => {
     try {
         const { userId } = getAuth(req);
         const resume = req.file;
-
         const plan = req.plan;
 
-        // Check premium plan
         if (plan !== "premium") {
             return res.json({
                 success: false,
@@ -413,7 +414,6 @@ export const resumeReview = async (req, res) => {
             });
         }
 
-        // Check whether file exists
         if (!resume) {
             return res.json({
                 success: false,
@@ -421,7 +421,6 @@ export const resumeReview = async (req, res) => {
             });
         }
 
-        // Check file size
         if (resume.size > 5 * 1024 * 1024) {
             return res.json({
                 success: false,
@@ -429,15 +428,10 @@ export const resumeReview = async (req, res) => {
             });
         }
 
-        // Parse PDF using pdf2json Promise wrapper
-        const pdfText = await new Promise((resolve, reject) => {
-            const pdfParser = new PDFParser(null, 1);
-            pdfParser.on("pdfParser_dataError", (errData) => reject(errData.parserError));
-            pdfParser.on("pdfParser_dataReady", () => {
-                resolve(pdfParser.getRawTextContent());
-            });
-            pdfParser.loadPDF(resume.path);
-        });
+        // Read file buffer and parse text cleanly
+        const dataBuffer = fs.readFileSync(resume.path);
+        const pdfData = await pdfParse(dataBuffer);
+        const pdfText = pdfData.text;
 
         // Create AI prompt
         const prompt = `
@@ -475,9 +469,6 @@ ${pdfText}
 
         const content = response.choices?.[0]?.message?.content;
 
-        console.log("RESUME REVIEW:", content);
-
-        // Check AI response
         if (!content) {
             return res.json({
                 success: false,
@@ -485,7 +476,6 @@ ${pdfText}
             });
         }
 
-        // Save result
         await sql`
             INSERT INTO creations(
                 user_id,
@@ -501,7 +491,6 @@ ${pdfText}
             )
         `;
 
-        // Return result
         return res.json({
             success: true,
             content
